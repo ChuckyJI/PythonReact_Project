@@ -581,7 +581,7 @@ def postdata():
         return "No JSON data received", 400
 
 if __name__ == '__main__':
-    app.run(host='13.212.119.178', port=3010)
+    app.run(host='0.0.0.0', port=3010)
     # a = {'id': 'sampleIDString', 'data': '{"BPMeds":0,"thalach":72,"trestbps":131,"age":43,"sex":0,"diaBP":88,"prevalentStroke":0,"KidneyDisease":1,"prevalentHyp":0,"dataType":"2"}', 'model': '[{"name":"NN","epochs":274,"earlyShopingStep":15,"layer":{"users":[{"layers":"120","function":"relu"},{"layers":"60","function":"relu"}]},"optimizer":"Adam","lossFunciton":"categorical_crossentropy"}]'}
     # data = dataPost(a)
     # insert_into_database(data)

@@ -530,7 +530,7 @@ def handle_options():
     return '', 204, response_headers
 
 def insert_into_database(data):
-    db_host = '13.214.187.252'
+    db_host = '13.212.119.178'
     db_user = 'root'
     db_password = 'KFJC23jd@1'
     db_name = 'researcherRecord'
@@ -581,7 +581,7 @@ def postdata():
         return "No JSON data received", 400
 
 if __name__ == '__main__':
-    app.run(host='13.214.187.252', port=3010)
+    app.run(host='13.212.119.178', port=3010)
     # a = {'id': 'sampleIDString', 'data': '{"BPMeds":0,"thalach":72,"trestbps":131,"age":43,"sex":0,"diaBP":88,"prevalentStroke":0,"KidneyDisease":1,"prevalentHyp":0,"dataType":"2"}', 'model': '[{"name":"NN","epochs":274,"earlyShopingStep":15,"layer":{"users":[{"layers":"120","function":"relu"},{"layers":"60","function":"relu"}]},"optimizer":"Adam","lossFunciton":"categorical_crossentropy"}]'}
     # data = dataPost(a)
     # insert_into_database(data)

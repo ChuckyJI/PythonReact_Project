@@ -16,7 +16,7 @@ from sklearn.svm import SVC, LinearSVC
 from sklearn.multiclass import OneVsRestClassifier
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
-# from catboost import CatBoostClassifier
+from catboost import CatBoostClassifier
 from flask import Flask, request
 
 app = Flask(__name__)

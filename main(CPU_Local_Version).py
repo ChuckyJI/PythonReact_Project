@@ -181,6 +181,11 @@ def deleteName(Object):
         del Object['name']
     return Object
 
+def deleteDegree(Object):
+    if 'degree' in Object:
+        del Object['degree']
+    return Object
+
 def testPortfolio(dict):
     for value in dict.values():
         if isinstance(value, list):
@@ -261,6 +266,8 @@ def find_model_forall(model_number, file_path, paramList, test_size, test, model
                 result.append(svc.score(x_test, y_test))
                 predict.append(svc.predict(testdata))
             else:
+                if ele['kernel'] != 'poly':
+                    ele = deleteDegree(ele)
                 svc = SVC(**deleteName(ele)).fit(x_train, y_train)
                 name.append("SVC")
                 params.append(deleteName(ele))
@@ -415,7 +422,7 @@ def assignModel(json_data):
     column2 = pd.read_csv('Data/dataset_2.csv').columns.tolist()
     column2[10] = 'trestbps'
     column2[9] = 'chol'
-    column2[0] = 'sex'
+    # column2[0] = 'sex'
     column2[13] = 'thalach'
     column2.remove('TenYearCHD')
 

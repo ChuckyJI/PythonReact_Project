@@ -16,7 +16,7 @@ from sklearn.svm import SVC, LinearSVC
 from sklearn.multiclass import OneVsRestClassifier
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
-from catboost import CatBoostClassifier
+# from catboost import CatBoostClassifier
 from flask import Flask, request
 
 app = Flask(__name__)
@@ -523,16 +523,27 @@ def transformRequest(originalRequest):
 @app.route('/gettestdata', methods=['OPTIONS'])
 def handle_options():
     response_headers = {
-        'Access-Control-Allow-Origin': '*',  # Adjust this based on your CORS requirements
-        'Access-Control-Allow-Methods': 'POST',  # Add more methods if needed
-        'Access-Control-Allow-Headers': 'Content-Type'  # Add more headers if needed
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST',
+        'Access-Control-Allow-Headers': 'Content-Type'
+    }
+    return '', 204, response_headers
+
+@app.route('/deleteRecord', methods=['OPTIONS'])
+def handle_delete_options():
+    response_headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST',
+        'Access-Control-Allow-Headers': 'Content-Type'
     }
     return '', 204, response_headers
 
 def insert_into_database(data):
     db_host = '13.250.206.7'
-    db_user = 'root'
     db_password = 'KFJC23jd@1'
+    # db_host = 'localhost'
+    # db_password = 'jcy901110'
+    db_user = 'root'
     db_name = 'researcherRecord'
     db = pymysql.connect(host=db_host, user=db_user, password=db_password, database=db_name)
     try:
@@ -568,6 +579,27 @@ def insert_into_database(data):
         db.rollback()
         return False
 
+def deleteRecord(data):
+    db_host = '13.250.206.7'
+    db_password = 'KFJC23jd@1'
+    # db_host = 'localhost'
+    # db_password = 'jcy901110'
+    db_user = 'root'
+    db_name = 'researcherRecord'
+    db = pymysql.connect(host=db_host, user=db_user, password=db_password, database=db_name)
+    try:
+        cursor = db.cursor()
+        query = "DELETE FROM resultRecord WHERE sampleID = %s"
+        values = (str(data))
+        cursor.execute(query, values)
+        db.commit()
+        cursor.close()
+        return True
+    except Exception as e:
+        print("Error:", e)
+        db.rollback()
+        return False
+
 
 @app.route('/gettestdata', methods=['POST'])
 def postdata():
@@ -576,6 +608,16 @@ def postdata():
     if getjson:
         result = dataPost(getjson)
         insert_into_database(result)
+        return "result"
+    else:
+        return "No JSON data received", 400
+
+@app.route('/deleteRecord', methods=['POST'])
+def deletedata():
+    getjson = request.get_json()
+    print(getjson)
+    if getjson:
+        deleteRecord(getjson)
         return "result"
     else:
         return "No JSON data received", 400

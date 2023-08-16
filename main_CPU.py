@@ -499,7 +499,7 @@ def assignModel(json_data):
 
 
 def dataPost(jsonstring):
-    jsonString, dataType, sampleID, modelist = transformRequest(jsonstring)
+    jsonString, dataType, sampleID, modelist,patientId = transformRequest(jsonstring)
     logInput(sampleID, "Pending")
     try:
         paramList, numberList, number = assignModel(jsonString)
@@ -523,10 +523,10 @@ def transformRequest(originalRequest):
         del jsonstring['dataType']
     jsonstring = str(jsonstring)
     dataType = eval(originalRequest['data'])['dataType']
-    # sampleID = originalRequest['id']
-    sampleID = uuid.uuid4().hex
+    sampleID = originalRequest['id']
     modelist = json.loads(originalRequest['model'])
-    return jsonstring,dataType,sampleID,modelist
+    patientId = originalRequest['patientId']
+    return jsonstring,dataType,sampleID,modelist,patientId
 
 
 @app.route('/gettestdata', methods=['OPTIONS'])
@@ -557,7 +557,7 @@ def insert_into_database(data):
     db = pymysql.connect(host=db_host, user=db_user, password=db_password, database=db_name)
     try:
         cursor = db.cursor()
-        query = "INSERT INTO resultRecord (dateTime, sampleID, numberOfDataset,resultList,result,paramsList,name,jsonString) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        query = "INSERT INTO resultRecord (dateTime, sampleID, numberOfDataset,resultList,result,paramsList,name,jsonString,patientId) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
         result = 0
         for i in range(len(data['name'])):
@@ -578,7 +578,8 @@ def insert_into_database(data):
                   str(output),
                   str(data['paramsList']),
                   str(data['name']),
-                  str(data['jsonString']))
+                  str(data['jsonString']),
+                  str(data['patientId']))
         cursor.execute(query, values)
         db.commit()
         cursor.close()

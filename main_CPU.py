@@ -509,7 +509,7 @@ def dataPost(jsonstring):
                    'Data/dataset_5.csv']
         result, resultList, paramsList,nameList = find_model_forall(int(dataType), docList[number], paramList, 0.15, numberList,modelist)
         # id fot each patient
-        outputjson = {"result": result, "resultList": resultList, "numberOfDataset": number, "paramsList": paramsList, "sampleID": sampleID, "name":nameList,"jsonString":jsonString}
+        outputjson = {"result": result, "resultList": resultList, "numberOfDataset": number, "paramsList": paramsList, "sampleID": sampleID, "name":nameList,"jsonString":jsonString,"patientId":patientId}
         print(outputjson)
         logUpdate(sampleID, "Training successfully!")
         return outputjson

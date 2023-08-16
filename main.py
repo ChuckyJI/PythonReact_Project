@@ -506,9 +506,8 @@ def postdata():
         return "No JSON data received", 400
 
 
-
 if __name__ == '__main__':
-    app.run(host='localhost', port=3010)
+    app.run(host='0.0.0.0', port=3010)
     # a = {'id': 'sampleIDString', 'data': '{"sex":0,"age":43,"education":2,"currentSmoker":0,"cigsPerDay":0,"BPMeds":0,"prevalentStroke":0,"prevalentHyp":0,"diabetes":0,"chol":247,"trestbps":131,"diaBP":88,"BMI":27.64,"thalach":72,"glucose":61,"KidneyDisease":1,"dataType":"b"}', 'model': '[{"name":"randomForest","n_estimators":["60","80","120"],"max_depth":["4","6"],"n_jobs":-1},{"name":"XGBoost","n_estimators":100,"max_depth":6,"learning_rate":"0.2","min_child_weight":1,"subsample":1,"colsample_bytree":1}]'}
     # dataPost(a)
 

@@ -17,10 +17,12 @@ from sklearn.multiclass import OneVsRestClassifier
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
-from flask import Flask, request
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
 warnings.filterwarnings("ignore")
+CORS(app)
 
 # os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
@@ -498,16 +500,22 @@ def assignModel(json_data):
 
 def dataPost(jsonstring):
     jsonString, dataType, sampleID, modelist = transformRequest(jsonstring)
-    paramList, numberList, number = assignModel(jsonString)
-    number = number + 1
-    docList = ['0', 'Data/dataset_1.csv', 'Data/dataset_2.csv',
-               'Data/dataset_3.csv', 'Data/dataset_4.csv',
-               'Data/dataset_5.csv']
-    result, resultList, paramsList,nameList = find_model_forall(int(dataType), docList[number], paramList, 0.15, numberList,modelist)
-    # id fot each patient
-    outputjson = {"result": result, "resultList": resultList, "numberOfDataset": number, "paramsList": paramsList, "sampleID": sampleID, "name":nameList,"jsonString":jsonString}
-    print(outputjson)
-    return outputjson
+    logInput(sampleID, "Pending")
+    try:
+        paramList, numberList, number = assignModel(jsonString)
+        number = number + 1
+        docList = ['0', 'Data/dataset_1.csv', 'Data/dataset_2.csv',
+                   'Data/dataset_3.csv', 'Data/dataset_4.csv',
+                   'Data/dataset_5.csv']
+        result, resultList, paramsList,nameList = find_model_forall(int(dataType), docList[number], paramList, 0.15, numberList,modelist)
+        # id fot each patient
+        outputjson = {"result": result, "resultList": resultList, "numberOfDataset": number, "paramsList": paramsList, "sampleID": sampleID, "name":nameList,"jsonString":jsonString}
+        print(outputjson)
+        logUpdate(sampleID, "Training successfully!")
+        return outputjson
+    except Exception as e:
+        logUpdate(sampleID,str(e))
+
 
 def transformRequest(originalRequest):
     jsonstring = eval(originalRequest['data'])
@@ -549,7 +557,7 @@ def insert_into_database(data):
     db = pymysql.connect(host=db_host, user=db_user, password=db_password, database=db_name)
     try:
         cursor = db.cursor()
-        query = "INSERT INTO resultRecord (dateTime, sampleID, numberOfDataset,resultList,result,paramsList,name,jsonString) VALUES (%s, %s,%s,%s,%s,%s,%s,%s)"
+        query = "INSERT INTO resultRecord (dateTime, sampleID, numberOfDataset,resultList,result,paramsList,name,jsonString) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
 
         result = 0
         for i in range(len(data['name'])):
@@ -600,6 +608,49 @@ def deleteRecord(data):
         print("Error:", e)
         db.rollback()
         return False
+
+def logInput(sampleID,msg):
+    db_host = '13.250.206.7'
+    db_password = 'KFJC23jd@1'
+    # db_host = 'localhost'
+    # db_password = 'jcy901110'
+    db_user = 'root'
+    db_name = 'researcherRecord'
+    db = pymysql.connect(host=db_host, user=db_user, password=db_password, database=db_name)
+    try:
+        cursor = db.cursor()
+        query = "INSERT INTO trainingLog (sampleID,logRecord) VALUES (%s, %s)"
+        values = (str(sampleID),str(msg))
+        cursor.execute(query, values)
+        db.commit()
+        cursor.close()
+        return True
+    except Exception as e:
+        print("Error:", e)
+        db.rollback()
+        return False
+
+def logUpdate(sampleID,msg):
+    db_host = '13.250.206.7'
+    db_password = 'KFJC23jd@1'
+    # db_host = 'localhost'
+    # db_password = 'jcy901110'
+    db_user = 'root'
+    db_name = 'researcherRecord'
+    db = pymysql.connect(host=db_host, user=db_user, password=db_password, database=db_name)
+    try:
+        cursor = db.cursor()
+        query = "UPDATE trainingLog SET logRecord = %s WHERE sampleID = %s"
+        values = (str(msg),str(sampleID))
+        cursor.execute(query, values)
+        db.commit()
+        cursor.close()
+        return True
+    except Exception as e:
+        print("Error:", e)
+        db.rollback()
+        return False
+
 
 
 @app.route('/gettestdata', methods=['POST'])

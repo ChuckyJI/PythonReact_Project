@@ -495,7 +495,7 @@ def assignModel(json_data,dataType):
 
     maxNumber = np.argmax([len(keysList1), len(keysList2), len(keysList3), len(keysList4), len(keysList5)])
 
-    return resultRecord[int(dataType)], valuesRecord[int(dataType)], maxNumber
+    return resultRecord[int(dataType-1)], valuesRecord[int(dataType-1)], maxNumber
 
 
 def dataPost(jsonstring):

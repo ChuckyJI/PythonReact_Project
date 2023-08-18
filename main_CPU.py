@@ -417,7 +417,7 @@ def find_model_forall(model_number, file_path, paramList, test_size, test, model
     return predict, result, params, name
 
 
-def assignModel(json_data):
+def assignModel(json_data,dataType):
     # generate the columns and unify names
     column1 = pd.read_csv('Data/dataset_1.csv').columns.tolist()
     column1.remove('condition')
@@ -495,14 +495,15 @@ def assignModel(json_data):
 
     maxNumber = np.argmax([len(keysList1), len(keysList2), len(keysList3), len(keysList4), len(keysList5)])
 
-    return resultRecord[maxNumber], valuesRecord[maxNumber], maxNumber
+    return resultRecord[int(dataType)], valuesRecord[int(dataType)], maxNumber
 
 
 def dataPost(jsonstring):
     jsonString, dataType, sampleID, modelist,patientId = transformRequest(jsonstring)
     logInput(sampleID, "Pending")
     try:
-        paramList, numberList, number = assignModel(jsonString)
+        paramList, numberList, number = assignModel(jsonString,dataType)
+        # number is for automatical selection, dataType is for manual selection
         number = number + 1
         docList = ['0', 'Data/dataset_1.csv', 'Data/dataset_2.csv',
                    'Data/dataset_3.csv', 'Data/dataset_4.csv',

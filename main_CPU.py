@@ -16,7 +16,7 @@ from sklearn.svm import SVC, LinearSVC
 from sklearn.multiclass import OneVsRestClassifier
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
-from catboost import CatBoostClassifier
+# from catboost import CatBoostClassifier
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -507,7 +507,7 @@ def dataPost(jsonstring):
         docList = ['0', 'Data/dataset_1.csv', 'Data/dataset_2.csv',
                    'Data/dataset_3.csv', 'Data/dataset_4.csv',
                    'Data/dataset_5.csv']
-        result, resultList, paramsList,nameList = find_model_forall(int(dataType), docList[number], paramList, 0.15, numberList,modelist)
+        result, resultList, paramsList,nameList = find_model_forall(int(dataType), docList[int(dataType)], paramList, 0.15, numberList,modelist)
         # id fot each patient
         outputjson = {"result": result, "resultList": resultList, "numberOfDataset": number, "paramsList": paramsList, "sampleID": sampleID, "name":nameList,"jsonString":jsonString,"patientId":patientId}
         print(outputjson)

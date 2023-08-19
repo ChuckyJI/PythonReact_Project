@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime,timedelta
 
 import pandas as pd
 import numpy as np
@@ -601,7 +601,10 @@ def deleteRecord(data):
     db = pymysql.connect(host=db_host, user=db_user, password=db_password, database=db_name)
 
     parsed_datetime = datetime.strptime(data, '%m/%d/%Y %I:%M:%S %p')
-    data = parsed_datetime.strftime('%Y-%m-%d %H:%M:%S')
+    utc_offset_hours = 8
+    output_datetime = parsed_datetime - timedelta(hours=utc_offset_hours)
+    data = output_datetime.strftime('%Y-%m-%d %H:%M:%S')
+    print(data)
     try:
         cursor = db.cursor()
         query = "DELETE FROM resultRecord WHERE dateTime = %s"

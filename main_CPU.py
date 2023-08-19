@@ -500,7 +500,8 @@ def assignModel(json_data,dataType):
 
 def dataPost(jsonstring):
     jsonString, dataType, sampleID, modelist,patientId = transformRequest(jsonstring)
-    logInput(sampleID, "Pending")
+    idNumber = logInput(sampleID, "Pending")
+    print(idNumber)
     try:
         paramList, numberList, number = assignModel(jsonString,dataType)
         # number is for automatical selection, dataType is for manual selection
@@ -512,10 +513,10 @@ def dataPost(jsonstring):
         # id fot each patient
         outputjson = {"result": result, "resultList": resultList, "numberOfDataset": number, "paramsList": paramsList, "sampleID": sampleID, "name":nameList,"jsonString":jsonString,"patientId":patientId}
         print(outputjson)
-        logUpdate(sampleID, "Training successfully!")
+        logUpdate("Training successfully!",idNumber)
         return outputjson
     except Exception as e:
-        logUpdate(sampleID,str(e))
+        logUpdate(str(e),idNumber)
 
 
 def transformRequest(originalRequest):
@@ -598,9 +599,12 @@ def deleteRecord(data):
     db_user = 'root'
     db_name = 'researcherRecord'
     db = pymysql.connect(host=db_host, user=db_user, password=db_password, database=db_name)
+
+    parsed_datetime = datetime.strptime(data, '%m/%d/%Y %I:%M:%S %p')
+    data = parsed_datetime.strftime('%Y-%m-%d %H:%M:%S')
     try:
         cursor = db.cursor()
-        query = "DELETE FROM resultRecord WHERE sampleID = %s"
+        query = "DELETE FROM resultRecord WHERE dateTime = %s"
         values = (str(data))
         cursor.execute(query, values)
         db.commit()
@@ -625,14 +629,15 @@ def logInput(sampleID,msg):
         values = (str(sampleID),str(msg))
         cursor.execute(query, values)
         db.commit()
+        inserted_id = cursor.lastrowid
         cursor.close()
-        return True
+        return inserted_id
     except Exception as e:
         print("Error:", e)
         db.rollback()
         return False
 
-def logUpdate(sampleID,msg):
+def logUpdate(msg,idNumber):
     db_host = '13.250.206.7'
     db_password = 'KFJC23jd@1'
     # db_host = 'localhost'
@@ -642,8 +647,8 @@ def logUpdate(sampleID,msg):
     db = pymysql.connect(host=db_host, user=db_user, password=db_password, database=db_name)
     try:
         cursor = db.cursor()
-        query = "UPDATE trainingLog SET logRecord = %s WHERE sampleID = %s"
-        values = (str(msg),str(sampleID))
+        query = "UPDATE trainingLog SET logRecord = %s WHERE id = %s"
+        values = (str(msg),str(idNumber))
         cursor.execute(query, values)
         db.commit()
         cursor.close()
